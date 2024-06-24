@@ -2,8 +2,7 @@ from collections import Counter, defaultdict
 from typing import Dict, Any
 
 import numpy as np
-import pandas as pd
-from sklearn.preprocessing import LabelEncoder
+from .data import load_adult
 
 
 class NaiveBayesClassifier:
@@ -13,7 +12,7 @@ class NaiveBayesClassifier:
         self.priori_x = defaultdict(dict)
         self._fitted = False
 
-    def fit(self, X, y, w=None):
+    def fit(self, X, y, w=None):  # w is not currently used...
         for y_val, cnt in Counter(y).items():
             self.priori_y[y_val] = cnt / len(y)
 
@@ -45,22 +44,12 @@ class NaiveBayesClassifier:
         return np.array([self.predict_one(x) for x in X])
 
 
-if __name__ == '__main__':
-    data = pd.read_csv("./data/categorical_features.csv", sep=r'\s*,\s*', engine='python', na_values="?")
-    # data.to_csv('./data/data.csv', index=False)
-    data = data.dropna()
-
-    label_encoders = {}
-    for column in data.select_dtypes(include=['object']).columns:
-        le = LabelEncoder()
-        data[column] = le.fit_transform(data[column])
-        label_encoders[column] = le
-    X = data.drop("income", axis=1).to_numpy()
-    y = data["income"].to_numpy()
-
-    cls = NaiveBayesClassifier()
-    cls.fit(X, y)
-
-    most_y = Counter(y).most_common()[0][1]
-    print(most_y / len(y))  # 0.7510775147536636
-    print(np.sum(cls.predict(X) == y) / len(y))  # 0.7510775147536636
+# if __name__ == '__main__':
+#     X, y = load_adult()
+#     print(X.shape)
+#     cls = NaiveBayesClassifier()
+#     cls.fit(X, y)
+#
+#     most_y = Counter(y).most_common()[0][1]
+#     print(most_y / len(y))  # 0.7510775147536636
+#     print(np.sum(cls.predict(X) == y) / len(y))  # 0.9132380731359613

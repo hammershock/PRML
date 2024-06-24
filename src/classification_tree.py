@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
-from base import BaseEstimator
+from .base import BaseEstimator
 
 
 def ent(p):

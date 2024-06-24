@@ -7,29 +7,29 @@ from sklearn.preprocessing import LabelEncoder
 
 def load_adult():
     url = "https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data"
-    # columns = ["age", "workclass", "fnlwgt", "education", "education-num", "marital-status",
-    #            "occupation", "relationship", "race", "sex", "capital-gain", "capital-loss",
-    #            "hours-per-week", "native-country", "income"]
+    columns = ["age", "workclass", "fnlwgt", "education", "education-num", "marital-status",
+               "occupation", "relationship", "race", "sex", "capital-gain", "capital-loss",
+               "hours-per-week", "native-country", "income"]
     local_path = "../data/adult.csv"
     if os.path.exists(local_path):
-        data = pd.read_csv(local_path, sep=r'\s*,\s*', engine='python', na_values="?")
+        data = pd.read_csv(local_path, names=columns, sep=r'\s*,\s*', engine='python', na_values="?")
     else:
-        data = pd.read_csv(url, sep=r'\s*,\s*', engine='python', na_values="?")
+        data = pd.read_csv(url, names=columns, sep=r'\s*,\s*', engine='python', na_values="?")
+        os.makedirs(os.path.dirname(local_path), exist_ok=True)
         data.to_csv(local_path, index=False)
 
     data = data.dropna()
 
     categorical_columns = data.select_dtypes(include=['object']).columns
     data = data[categorical_columns]
-
     label_encoders = {}
     for column in data.select_dtypes(include=['object']).columns:
         le = LabelEncoder()
         data[column] = le.fit_transform(data[column])
         label_encoders[column] = le
 
-    X = data.drop("income", axis=1)
-    y = data["income"]
+    X = data.drop("income", axis=1).to_numpy()
+    y = data["income"].to_numpy()
     return X, y
 
 
